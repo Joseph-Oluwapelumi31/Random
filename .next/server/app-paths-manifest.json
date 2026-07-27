@@ -1,0 +1,5 @@
+{
+  "/page": "app/page.js",
+  "/regulatory-insights/page": "app/regulatory-insights/page.js",
+  "/innovation-pipeline/page": "app/innovation-pipeline/page.js"
+}
