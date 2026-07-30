@@ -119,16 +119,16 @@ function TypewriterBadge({ className = '', variant = 'overlay', lines }) {
 export default function Hero3D({ heroCopy = null }) {
   const heroEyebrow =
     (typeof heroCopy?.heroEyebrow === 'string' && heroCopy.heroEyebrow.trim()) ||
-    'EB-1A Approved MedTech Executive · Global Product Development Leader';
-  const heroHeadlinePlain =
-    (typeof heroCopy?.heroHeadlinePlain === 'string' && heroCopy.heroHeadlinePlain.trim()) ||
-    'Global MedTech Executive & R&D Strategist';
+    'EB-1A Scientist';
+  // const heroHeadlinePlain =
+  //   (typeof heroCopy?.heroHeadlinePlain === 'string' && heroCopy.heroHeadlinePlain.trim()) ||
+  //   'Global MedTech Executive & R&D Strategist';
   const heroHeadlineGradient =
     (typeof heroCopy?.heroHeadlineGradient === 'string' && heroCopy.heroHeadlineGradient.trim()) ||
     'Engineering the Future of Human Health.';
   const heroSubline1 =
     (typeof heroCopy?.heroSubline1 === 'string' && heroCopy.heroSubline1.trim()) ||
-    'Global R&D Strategy · Product Pipeline · NIH-Funded Innovation';
+    'Global R&D Strategy • Product Pipeline •NIH-Funded Innovation';
   /* Referenced in JSX below — commenting this out breaks the whole home page (ReferenceError). */
   const heroSubline2 =
     (typeof heroCopy?.heroSubline2 === 'string' && heroCopy.heroSubline2.trim()) ||
@@ -160,7 +160,7 @@ export default function Hero3D({ heroCopy = null }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
 
           {/* LEFT: Text */}
-          <div>
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
             <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
               className="inline-flex items-center gap-2 glass-exec rounded-full px-4 py-1.5 mb-7 border border-[#0bc5ea]/20">
               <span className="w-1.5 h-1.5 rounded-full bg-[#0bc5ea] animate-pulse" />
@@ -169,8 +169,8 @@ export default function Hero3D({ heroCopy = null }) {
 
             <motion.h1 initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}
               className="font-heading font-bold leading-[1.08] text-white mb-6">
-              <span className="block text-3xl sm:text-4xl lg:text-5xl tracking-tight">{heroHeadlinePlain}</span>
-              <span className="block text-2xl sm:text-3xl lg:text-[2.65rem] text-gradient-cyan mt-3 sm:mt-4">
+              {/* <span className="block text-3xl sm:text-4xl lg:text-5xl tracking-tight">{heroHeadlinePlain}</span> */}
+              <span className="block text-4xl sm:text-3xl lg:text-[2.65rem] text-gradient-cyan  mt-3 mb-4 sm:mt-4">
                 {heroHeadlineGradient}
               </span>
             </motion.h1>
@@ -256,13 +256,14 @@ export default function Hero3D({ heroCopy = null }) {
               ))}
             </motion.div>
           </div>
+          
 
           {/* RIGHT: Large portrait — desktop only */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, delay: 0.4, ease: 'easeOut' }}
-            className="relative hidden lg:flex justify-center items-center"
+            className="relative hidden lg:flex justify-center items-center w-150 h-50"
             data-testid="hero-profile-photo"
           >
             <div className="absolute top-6 right-4 w-[420px] h-[560px] rounded-[2.5rem] bg-[#8A2BE2]/12 blur-lg" />
@@ -299,19 +300,19 @@ export default function Hero3D({ heroCopy = null }) {
               </div>
             </motion.div>
           </motion.div>
-
+          <motion.button
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
+            onClick={() => document.getElementById('kpi-section')?.scrollIntoView({ behavior: 'smooth' })}
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-1 text-[#64748b] hover:text-[#0bc5ea] transition-colors"
+            data-testid="hero-scroll-down"
+          >
+            <span className="text-xs uppercase tracking-widest">Scroll</span>
+            <ChevronDown size={14} />
+          </motion.button>
         </div>
       </div>
 
-      <motion.button
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
-        onClick={() => document.getElementById('kpi-section')?.scrollIntoView({ behavior: 'smooth' })}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-1 text-[#64748b] hover:text-[#0bc5ea] transition-colors"
-        data-testid="hero-scroll-down"
-      >
-        <span className="text-xs uppercase tracking-widest">Scroll</span>
-        <ChevronDown size={14} />
-      </motion.button>
+      
     </section>
   );
 }

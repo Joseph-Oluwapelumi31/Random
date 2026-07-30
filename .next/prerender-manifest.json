@@ -1,11 +1,1 @@
-{
-  "version": 4,
-  "routes": {},
-  "dynamicRoutes": {},
-  "notFoundRoutes": [],
-  "preview": {
-    "previewModeId": "811c674af311dc7dd6eae3fe4fc25a44",
-    "previewModeSigningKey": "d75f84422a28f4e5b808e124aa1e8c6784e0b0229a6136c8f5ae55b7e032845a",
-    "previewModeEncryptionKey": "eb201b012bdc4d68c431d3eed920548d373b11fcf3e83ff430007578b65051de"
-  }
-}
+{"version":4,"routes":{"/regulatory-insights/emrast-alzheimers":{},"/regulatory-insights/fda-breakthrough-cbotp":{},"/regulatory-insights/smart-nasal-cannula":{},"/regulatory-insights/fda-rejection-lessons":{},"/regulatory-insights/pupillometry-editor":{},"/regulatory-insights/memorydriver":{}},"dynamicRoutes":{"/regulatory-insights/[slug]":{"dataRoute":null,"dataRouteRegex":null,"fallback":null,"fallbackRevalidate":false,"fallbackSourceRoute":"/regulatory-insights/[slug]","routeRegex":"^\\/regulatory\\-insights\\/([^/]+?)(?:\\/)?$","allowHeader":[]}},"notFoundRoutes":[],"preview":{"previewModeId":"e91cc4e9652d52055f13b90fd099758b","previewModeSigningKey":"b74a2f238f841f4127c0b9dcb30d6ee41152dab8dd821606451bcd2b8dc9bf12","previewModeEncryptionKey":"4caafc7fc8f6dec652046e6f620d26fb62d6ce56e20eeeaecf5afcaf1e123f35"}}

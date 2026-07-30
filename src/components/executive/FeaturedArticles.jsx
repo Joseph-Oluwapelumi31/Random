@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { ArrowRight, TrendingUp, Pin } from 'lucide-react';
 import axios from 'axios';
 import STATIC_ARTICLES from '@/lib/staticArticles';
-
+import Image from 'next/image'
+import FlowConnector from './FlowConnector';
 function resolveBackendUrl() {
   const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (typeof raw !== 'string') return '';
@@ -53,17 +54,18 @@ function ArticleCard({ article, isPinned, isTrending, index }) {
     >
       <Link
         href={`/regulatory-insights/${slug}`}
-        className="flex flex-col glass-card rounded-2xl overflow-hidden border border-white/6 hover:-translate-y-1 hover:border-white/15 transition-all duration-300 group h-full"
+        className="relative flex flex-col glass-card rounded-2xl overflow-hidden border border-white/6 hover:-translate-y-1 hover:border-white/15 transition-all duration-300 group h-full"
       >
         {/* Image */}
         {(article.image_url || article.imageUrl) && (
-          <div className="h-40 overflow-hidden relative flex-shrink-0">
-            <img
+          <div className=" h-[420px]  overflow-hidden relative flex-shrink-0">
+            <Image
               src={article.image_url || article.imageUrl}
               alt={article.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              fill
+              className="  object-cover group-hover:scale-105 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0d1117] to-transparent" />
+            <div className="absolute top-7 inset-0 bg-gradient-to-t from-[#0d1117] to-transparent" />
             {/* Status badges */}
             <div className="absolute top-3 left-3 flex gap-1.5">
               {isPinned && (
@@ -80,14 +82,14 @@ function ArticleCard({ article, isPinned, isTrending, index }) {
           </div>
         )}
 
-        <div className="p-5 flex flex-col flex-1">
+        <div className={`absolute  bottom-0 flex flex-col justify-end p-6 ${isTrending ? "top-10" : "bottom-0" }`}>
           <span className="text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: c }}>
             {article.category}
           </span>
-          <h3 className="font-heading font-bold text-white text-base leading-snug group-hover:text-[#0bc5ea] transition-colors line-clamp-2 mb-2">
+          <h3 className={`font-heading font-bold text-white  leading-snug group-hover:text-[#0bc5ea] transition-colors line-clamp-3 mb-2 ${isTrending ? "text-3xl" : "text-2xl"}`}>
             {article.title}
           </h3>
-          <p className="text-[#64748b] text-xs leading-relaxed line-clamp-2 mb-3 flex-1">
+          <p className="text-white/100 text-xs leading-relaxed line-clamp-2 mb-3 flex-1">
             {article.excerpt}
           </p>
           <div className="flex items-center justify-between mt-auto">
@@ -96,7 +98,7 @@ function ArticleCard({ article, isPinned, isTrending, index }) {
                 <><TrendingUp size={9} /> {article.views} views</>
               )}
             </div>
-            <ArrowRight size={13} className="text-[#64748b] group-hover:text-[#0bc5ea] group-hover:translate-x-1 transition-all" />
+            {/* <ArrowRight size={13} className="text-[#64748b] group-hover:text-[#0bc5ea] group-hover:translate-x-1 transition-all" /> */}
           </div>
         </div>
       </Link>
@@ -144,6 +146,13 @@ export default function FeaturedArticles({
       .catch(fallbackStatic);
   }, [initialArticles]);
 
+  const validArticles = articles.filter(
+   (a) => String(a.slug || a.id || "").trim()
+  );
+
+  const featured = validArticles.slice(0, 3);
+  const regular = validArticles.slice(3);
+
   return (
     <section data-testid="featured-articles" className="py-16 px-6 section-divider bg-[#080d12]">
       <div className="max-w-7xl mx-auto" ref={ref}>
@@ -178,18 +187,63 @@ export default function FeaturedArticles({
         </motion.p>
 
         {articles.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {articles
-              .filter((a) => String(a.slug || a.id || '').trim())
-              .map((a, i) => (
-                <ArticleCard
-                  key={a.id || a.slug || i}
-                  article={a}
-                  isPinned={a.is_featured}
-                  isTrending={!a.is_featured && i < 3}
-                  index={i}
-                />
+          <div className="relative  lg:block">
+            <FlowConnector/>
+
+            {/* Featured Articles */}
+            <div className="space-y-8">
+
+              {featured.map((article, i) => (
+                <div
+                  key={article.id || article.slug}
+                  className="hidden lg:grid grid-cols-5 gap-6"
+                >
+                  <div
+                    className={`col-span-3 ${
+                      i % 2 === 0
+                        ? "col-start-1"
+                        : "col-start-3"
+                    }`}
+                  >
+                    <ArticleCard
+                      article={article}
+                      isPinned={article.is_featured}
+                      isTrending={!article.is_featured}
+                      index={i}
+                    />
+                  </div>
+                </div>
               ))}
+
+              {/* Mobile */}
+              <div className="lg:hidden space-y-6">
+                {featured.map((article, i) => (
+                  <ArticleCard
+                    key={article.id || article.slug}
+                    article={article}
+                    isPinned={article.is_featured}
+                    isTrending={!article.is_featured}
+                    index={i}
+                  />
+                ))}
+              </div>
+              
+            </div>
+              
+            {/* Other Articles */}
+            {regular.length > 0 && (
+              <div className="grid md:grid-cols-2 gap-6 mt-10">
+                {regular.map((article, i) => (
+                  <ArticleCard
+                    key={article.id || article.slug}
+                    article={article}
+                    isPinned={article.is_featured}
+                    isTrending={false}
+                    index={i + featured.length}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">

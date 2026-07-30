@@ -16,6 +16,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
+    "/regulatory-insights/[slug]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/regulatory-insights/[slug]/page.js"
+    ],
     "/regulatory-insights/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -25,11 +30,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/regulatory-search/route.js"
-    ],
-    "/innovation-pipeline/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/innovation-pipeline/page.js"
     ]
   }
 }
