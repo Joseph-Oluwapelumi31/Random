@@ -33,7 +33,7 @@ export default async function ExecutiveProfilePage() {
   const nihProjects = valueFromSettled(settled[4], []);
 
   return (
-    <div className="bg-[#080d12]" data-testid="home-page">
+    <div className="bg-background" data-testid="home-page">
       <HeroDynamic heroCopy={site} />
       <KPIDashboard
         eyebrow={site?.kpiEyebrow}

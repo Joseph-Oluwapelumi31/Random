@@ -1,5 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/regulatory-insights/[slug]/page": "app/regulatory-insights/[slug]/page.js",
-  "/regulatory-insights/page": "app/regulatory-insights/page.js"
+  "/page": "app/page.js"
 }
