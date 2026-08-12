@@ -1,3 +1,4 @@
 {
-  "/page": "app/page.js"
+  "/api/regulatory-search/route": "app/api/regulatory-search/route.js",
+  "/regulatory-insights/page": "app/regulatory-insights/page.js"
 }

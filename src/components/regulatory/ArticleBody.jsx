@@ -26,30 +26,30 @@ function normalizePortableBody(body) {
 const portableComponents = {
   block: {
     h2: ({ children }) => (
-      <h2 className="font-heading text-2xl font-bold text-white mt-10 mb-4 scroll-mt-24">{children}</h2>
+      <h2 className="font-heading text-2xl font-bold text-foreground mt-10 mb-4 scroll-mt-24">{children}</h2>
     ),
     h3: ({ children }) => (
-      <h3 className="font-heading text-xl font-semibold text-white mt-8 mb-3 scroll-mt-24">{children}</h3>
+      <h3 className="font-heading text-xl font-semibold text-foreground mt-8 mb-3 scroll-mt-24">{children}</h3>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-[3px] border-[#0bc5ea] pl-4 my-6 text-[#94a3b8] italic leading-relaxed">{children}</blockquote>
+      <blockquote className="border-l-[3px] border-primary pl-4 my-6 text-muted-foreground italic leading-relaxed">{children}</blockquote>
     ),
-    normal: ({ children }) => <p className="text-[#94a3b8] leading-relaxed mb-4">{children}</p>,
+    normal: ({ children }) => <p className="text-muted-foreground leading-relaxed mb-4">{children}</p>,
   },
   list: {
-    bullet: ({ children }) => <ul className="list-disc pl-6 mb-4 text-[#94a3b8] space-y-1">{children}</ul>,
-    number: ({ children }) => <ol className="list-decimal pl-6 mb-4 text-[#94a3b8] space-y-1">{children}</ol>,
+    bullet: ({ children }) => <ul className="list-disc pl-6 mb-4 text-muted-foreground space-y-1">{children}</ul>,
+    number: ({ children }) => <ol className="list-decimal pl-6 mb-4 text-muted-foreground space-y-1">{children}</ol>,
   },
   listItem: {
     bullet: ({ children }) => <li className="leading-relaxed">{children}</li>,
     number: ({ children }) => <li className="leading-relaxed">{children}</li>,
   },
   marks: {
-    strong: ({ children }) => <strong className="text-[#e2e8f0] font-semibold">{children}</strong>,
-    em: ({ children }) => <em className="text-[#cbd5e1]">{children}</em>,
-    underline: ({ children }) => <span className="underline decoration-[#0bc5ea]/60">{children}</span>,
+    strong: ({ children }) => <strong className="text-foreground font-semibold">{children}</strong>,
+    em: ({ children }) => <em className="text-muted-foreground">{children}</em>,
+    underline: ({ children }) => <span className="underline decoration-primary/60">{children}</span>,
     code: ({ children }) => (
-      <code className="text-[#0bc5ea] bg-[#0bc5ea]/10 px-1.5 py-0.5 rounded text-[0.88em]">{children}</code>
+      <code className="text-primary bg-primary/10 px-1.5 py-0.5 rounded text-[0.88em]">{children}</code>
     ),
     link: ({ value, children }) => {
       const href = value?.href || '#';
@@ -57,7 +57,7 @@ const portableComponents = {
       return (
         <a
           href={href}
-          className="text-[#0bc5ea] hover:underline font-medium"
+          className="text-primary hover:underline font-medium"
           {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         >
           {children}
@@ -70,10 +70,10 @@ const portableComponents = {
       const src = ptImageUrl(value);
       if (!src) return null;
       return (
-        <figure className="my-8 rounded-2xl overflow-hidden border border-white/10 bg-[#0c1219]/50">
+        <figure className="my-8 rounded-2xl overflow-hidden border border-border/10 bg-card/50">
           <img src={src} alt={value?.alt || ''} className="w-full h-auto object-cover max-h-[28rem]" loading="lazy" />
           {value?.caption ? (
-            <figcaption className="text-center text-[#64748b] text-sm px-4 py-3">{value.caption}</figcaption>
+            <figcaption className="text-center text-muted-foreground text-sm px-4 py-3">{value.caption}</figcaption>
           ) : null}
         </figure>
       );
@@ -96,7 +96,7 @@ class PortableTextBoundary extends React.Component {
       const md = typeof this.props.markdown === 'string' ? this.props.markdown : '';
       return (
         <div className="prose-exec">
-          <p className="text-amber-200/90 text-sm mb-4">
+          <p className="text-muted-foreground text-sm mb-4">
             Rich text could not be rendered safely; showing Markdown / plain fallback below.
           </p>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{md}</ReactMarkdown>

@@ -198,7 +198,7 @@ export default function InnovationHubPage() {
               {aiResults !== null && (
                 <p className="text-[#00E5FF] text-xs mt-2 flex items-center justify-center gap-1">
                   <Sparkles size={11} />
-                  Gemini found {aiResults.length} article{aiResults.length !== 1 ? "s" : ""} for "{searchQuery}"
+                  Gemini found {aiResults.length} article{aiResults.length !== 1 ? "s" : ""} for &quot;{searchQuery}&quot;
                   <button onClick={clearSearch} className="ml-1 underline text-[#718096] hover:text-white">Clear</button>
                 </p>
               )}

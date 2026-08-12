@@ -1,4 +1,3 @@
-'use client';
 
 import Hero3D from '@/components/hero/Hero3D';
 

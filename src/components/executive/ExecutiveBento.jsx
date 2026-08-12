@@ -1,13 +1,15 @@
 'use client';
-import { useRef, useMemo } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useMemo } from 'react';
 import { Award, GraduationCap, Lightbulb, Globe, Shield, Microscope, BookOpen, Dna, TrendingUp, Target } from 'lucide-react';
 import { BENTO_TILE_DEFAULTS } from '@/lib/siteContentSeed';
 import { BRAND_LOGO_URLS } from '@/lib/brandLogos';
+import Image  from 'next/image';
 
 const LogoJHU = () => (
-  <img
+  <Image
     src={BRAND_LOGO_URLS.johnsHopkins}
+    width={104}
+    height={28}
     alt="Johns Hopkins University"
     className="block h-7 max-h-7 w-auto max-w-[7rem] object-contain object-left shrink-0 bg-transparent border-0"
     draggable={false}
@@ -17,8 +19,10 @@ const LogoJHU = () => (
   />
 );
 const LogoNIT = () => (
-  <img
+  <Image
     src={BRAND_LOGO_URLS.nitRourkela}
+    width={104}
+    height={28}
     alt="NIT Rourkela"
     className="block h-7 max-h-7 w-auto max-w-[2.75rem] object-contain object-left shrink-0 bg-transparent border-0"
     draggable={false}
@@ -28,8 +32,10 @@ const LogoNIT = () => (
   />
 );
 const LogoEvon = () => (
-  <img
+  <Image
     src={BRAND_LOGO_URLS.evon}
+    width={104}
+    height={28}
     alt="Evon Medics"
     className="block h-7 max-h-7 w-auto max-w-[6.5rem] object-contain object-left shrink-0 bg-transparent border-0"
     draggable={false}
@@ -89,44 +95,126 @@ function mergeBentoFromSanity(sanityTiles) {
   });
 }
 
-function BentoCard({ item, index }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-40px' });
+function BentoCard({ item }) {
   const { Logo } = item;
   const Icon = item.Icon || Award;
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 32 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.55, delay: index * 0.06 }}
+    <div
       data-testid={`bento-${item.id}`}
-      className={`relative overflow-hidden rounded-2xl glass-card border p-5 group hover:-translate-y-1 transition-all duration-300 ${item.span}`}
-      style={{ borderColor: `${item.accent}18` }}
+    className={`
+      group
+      relative
+      overflow-hidden
+      rounded-3xl
+      border
+      border-border/60
+      bg-card
+      p-8
+      shadow-sm
+      transition-all
+      duration-500
+      hover:-translate-y-2
+      hover:shadow-2xl
+      hover:border-primary/20
+      ${item.span}
+      `}
     >
-      <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-70 rounded-2xl`} aria-hidden />
+      {/* Glow */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
-        style={{ background: `radial-gradient(circle at 40% 40%, ${item.accent}0e 0%, transparent 70%)` }}
-        aria-hidden
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+        style={{
+          background: `radial-gradient(circle at top right, ${item.accent}15 0%, transparent 65%)`,
+        }}
       />
-      <div className="relative z-10">
-        <div className="flex items-start gap-3 mb-3">
+
+      {/* Accent line */}
+      <div
+        className="absolute top-0 left-0 h-1 w-full"
+        style={{
+          background: `linear-gradient(to right, ${item.accent}, transparent)`,
+        }}
+      />
+
+      <div className="relative z-10 h-full flex flex-col">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+
           {Logo ? (
-            <div className="flex-shrink-0 mt-1"><Logo /></div>
+            <Logo />
           ) : (
-            <div className="p-2 rounded-xl flex-shrink-0" style={{ background: `${item.accent}18` }}>
-              <Icon size={16} style={{ color: item.accent }} />
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center border"
+              style={{
+                background: `${item.accent}10`,
+                borderColor: `${item.accent}25`,
+              }}
+            >
+              <Icon
+                size={22}
+                style={{
+                  color: item.accent,
+                }}
+              />
             </div>
           )}
-          <span className="text-xs font-semibold uppercase tracking-widest mt-2" style={{ color: item.accent }}>
+
+          <span
+            className="text-[11px] font-semibold uppercase tracking-[0.18em]"
+            style={{ color: item.accent }}
+          >
             {item.label}
           </span>
+
         </div>
-        <h3 className="font-heading font-bold text-white text-base mb-2 leading-snug">{item.title}</h3>
-        <p className="text-[#94a3b8] text-sm leading-relaxed">{item.desc}</p>
+
+        {/* Content */}
+
+        <h3 className="font-heading text-xl font-bold leading-tight text-foreground">
+          {item.title}
+        </h3>
+
+        <p className="mt-4 text-sm leading-7 text-muted-foreground">
+          {item.desc}
+        </p>
+
+        {/* Footer */}
+
+        <div className="mt-auto pt-8 flex items-center justify-between">
+
+          <span className="text-sm font-medium text-primary">
+            Learn more
+          </span>
+
+          <div
+            className="
+              w-10
+              h-10
+              rounded-full
+              border
+              flex
+              items-center
+              justify-center
+              transition-all
+              duration-300
+              group-hover:bg-primary
+              group-hover:border-primary
+            "
+          >
+            <TrendingUp
+              size={16}
+              className="
+                text-primary
+                transition-colors
+                duration-300
+                group-hover:text-white
+              "
+            />
+          </div>
+
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -137,8 +225,6 @@ export default function ExecutiveBento({
   sectionTitleAccent,
   sectionHint,
 }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
   const items = useMemo(() => mergeBentoFromSanity(sanityTiles), [sanityTiles]);
 
   const eyebrow = sectionEyebrow?.trim() || 'Executive Profile';
@@ -149,22 +235,141 @@ export default function ExecutiveBento({
     'Impact statements editable via Sanity Studio → executiveBento documents (match Tile IDs).';
 
   return (
-    <section id="about" data-testid="executive-bento" className="py-20 px-6 section-divider bg-[#080d12]">
+    <section
+      id="about"
+      data-testid="executive-bento"
+      className="relative py-28 px-6 overflow-hidden section-divider"
+    >
+      {/* Background Glow */}
+      <div
+        className="
+          absolute
+          inset-0
+          -z-10
+          bg-[radial-gradient(circle_at_top,rgba(14,165,233,.08),transparent_60%)]
+        "
+      />
+
       <div className="max-w-7xl mx-auto">
-        <div ref={ref} className="mb-12">
-          <motion.p initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-            className="text-[#0bc5ea] text-xs font-semibold uppercase tracking-widest mb-3">{eyebrow}</motion.p>
-          <motion.h2 initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.08 }}
-            className="font-heading text-4xl sm:text-5xl font-bold text-white leading-none">
-            {titleMain}{' '}
-            <span className="text-gradient-cyan">{titleAccent}</span>
-          </motion.h2>
-          <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.15 }}
-            className="text-[#64748b] text-xs mt-2">{hint}</motion.p>
+
+        {/* Header */}
+        <div
+          className="
+            flex
+            flex-col
+            lg:flex-row
+            lg:items-end
+            lg:justify-between
+            gap-10
+            mb-16
+          "
+        >
+          <div className="max-w-3xl">
+
+            <div>
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  rounded-full
+                  border
+                  border-primary/20
+                  bg-primary/5
+                  px-4
+                  py-1.5
+                  text-[11px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.25em]
+                  text-primary
+                "
+              >
+                {eyebrow}
+              </span>
+
+              <h2
+                className="
+                  mt-6
+                  font-heading
+                  text-5xl
+                  lg:text-6xl
+                  font-bold
+                  tracking-tight
+                  leading-[1.05]
+                "
+              >
+                {titleMain}
+
+                <span className="block text-gradient-cyan mt-2">
+                  {titleAccent}
+                </span>
+              </h2>
+
+              <p
+                className="
+                  mt-6
+                  text-lg
+                  leading-8
+                  text-muted-foreground
+                  max-w-2xl
+                "
+              >
+                {hint}
+              </p>
+            </div>
+          </div>
+
+          {/* Executive Stats */}
+          <div
+            className="
+              flex
+              gap-8
+              lg:justify-end
+              flex-wrap
+            "
+          >
+            <div>
+              <p className="text-3xl font-bold">$12.5M</p>
+              <p className="text-sm text-muted-foreground">
+                Portfolio
+              </p>
+            </div>
+
+            <div>
+              <p className="text-3xl font-bold">5+</p>
+              <p className="text-sm text-muted-foreground">
+                US Patents
+              </p>
+            </div>
+
+            <div>
+              <p className="text-3xl font-bold">10+</p>
+              <p className="text-sm text-muted-foreground">
+                Years
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {items.map((item, i) => <BentoCard key={item.id} item={item} index={i} />)}
+
+        {/* Bento Grid */}
+        <div
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-4
+            auto-rows-[240px]
+            gap-6
+          "
+        >
+          {items.map((item, i) => (
+            <BentoCard
+              key={item.id}
+              item={item}
+            />
+          ))}
         </div>
+
       </div>
     </section>
   );

@@ -55,7 +55,7 @@ export default function Contact() {
             transition={{ delay: 0.1 }}
             className="font-heading text-4xl sm:text-5xl font-800 text-white leading-none"
           >
-            Let's Build the{" "}
+            Let&apos;s Build the{" "}
             <span className="text-gradient">Future Together.</span>
           </motion.h2>
         </div>
@@ -69,7 +69,7 @@ export default function Contact() {
             className="space-y-6"
           >
             <p className="text-[#A0AEC0] text-base leading-relaxed max-w-md">
-              Whether you're a researcher, investor, industry partner, or patient advocate — I'm open to conversations that advance human health.
+              Whether you&apos;re a researcher, investor, industry partner, or patient advocate — I&apos;m open to conversations that advance human health.
             </p>
 
             {/* Social Links */}
@@ -153,7 +153,7 @@ export default function Contact() {
               <div className="flex flex-col items-center justify-center py-12 gap-3">
                 <CheckCircle size={48} className="text-[#00E5FF]" />
                 <p className="text-white font-semibold">Message received!</p>
-                <p className="text-[#718096] text-sm text-center">I'll get back to you within 24 hours.</p>
+                <p className="text-[#718096] text-sm text-center">I&apos;ll get back to you within 24 hours.</p>
               </div>
             ) : (
               <form onSubmit={handleSend} className="space-y-4">

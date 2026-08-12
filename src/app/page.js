@@ -1,10 +1,5 @@
+import dynamic from 'next/dynamic';
 import HeroDynamic from '@/components/hero/HeroDynamic';
-import KPIDashboard from '@/components/executive/KPIDashboard';
-import FeaturedArticles from '@/components/executive/FeaturedArticles';
-import ExecutiveBento from '@/components/executive/ExecutiveBento';
-import NIHFunding from '@/components/executive/NIHFunding';
-import ORCIDPublications from '@/components/executive/ORCIDPublications';
-import Contact from '@/components/executive/Contact';
 import { getORCIDWorks } from '@/lib/orcid';
 import {
   getFeaturedEnnobleArticles,
@@ -13,6 +8,29 @@ import {
   getNihPortfolioProjects,
 } from '@/lib/sanity';
 import { valueFromSettled } from '@/lib/asyncUtils';
+
+const SectionSkeleton = ({ className = '' }) => (
+  <div className={`min-h-[16rem] w-full rounded-3xl border border-border/60 bg-card/70 ${className}`} />
+);
+
+const KPIDashboard = dynamic(() => import('@/components/executive/KPIDashboard'), {
+  loading: () => <SectionSkeleton className="min-h-[12rem]" />,
+});
+const FeaturedArticles = dynamic(() => import('@/components/executive/FeaturedArticles'), {
+  loading: () => <SectionSkeleton className="min-h-[18rem]" />,
+});
+const ExecutiveBento = dynamic(() => import('@/components/executive/ExecutiveBento'), {
+  loading: () => <SectionSkeleton className="min-h-[20rem]" />,
+});
+const NIHFunding = dynamic(() => import('@/components/executive/NIHFunding'), {
+  loading: () => <SectionSkeleton className="min-h-[18rem]" />,
+});
+const ORCIDPublications = dynamic(() => import('@/components/executive/ORCIDPublications'), {
+  loading: () => <SectionSkeleton className="min-h-[16rem]" />,
+});
+const Contact = dynamic(() => import('@/components/executive/Contact'), {
+  loading: () => <SectionSkeleton className="min-h-[14rem]" />,
+});
 
 /** Next.js requires a static number here. 60s balances freshness vs. Sanity load. */
 export const revalidate = 60;
@@ -33,7 +51,7 @@ export default async function ExecutiveProfilePage() {
   const nihProjects = valueFromSettled(settled[4], []);
 
   return (
-    <div className="bg-background" data-testid="home-page">
+    <div data-testid="home-page">
       <HeroDynamic heroCopy={site} />
       <KPIDashboard
         eyebrow={site?.kpiEyebrow}

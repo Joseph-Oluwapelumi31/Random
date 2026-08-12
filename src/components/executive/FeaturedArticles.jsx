@@ -6,7 +6,6 @@ import { ArrowRight, TrendingUp, Pin } from 'lucide-react';
 import axios from 'axios';
 import STATIC_ARTICLES from '@/lib/staticArticles';
 import Image from 'next/image'
-import FlowConnector from './FlowConnector';
 function resolveBackendUrl() {
   const raw = process.env.NEXT_PUBLIC_BACKEND_URL;
   if (typeof raw !== 'string') return '';
@@ -38,82 +37,113 @@ const CAT_COLORS = {
   'Project Spotlight': '#10b981',
 };
 
-function ArticleCard({ article, isPinned, isTrending, index }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-30px' });
-  const c = CAT_COLORS[article.category] || '#0bc5ea';
-  const slug = String(article.slug || article.id || '').trim();
+function ArticleCard({ article, featured = false }) {
+  const slug = String(article.slug || article.id || "").trim();
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: (index % 6) * 0.08 }}
-      data-testid={`featured-article-${article.id || index}`}
-    >
+    <div>
       <Link
         href={`/regulatory-insights/${slug}`}
-        className="relative flex flex-col glass-card rounded-2xl overflow-hidden border border-white/6 hover:-translate-y-1 hover:border-white/15 transition-all duration-300 group h-full"
+        className="
+          group
+          block
+          overflow-hidden
+          rounded-[28px]
+          border border-border/60
+          bg-card
+          shadow-sm
+          hover:shadow-2xl
+          hover:-translate-y-2
+          hover:border-primary/20
+          transition-all
+          duration-500
+        "
       >
         {/* Image */}
         {(article.image_url || article.imageUrl) && (
-          <div className=" h-[420px]  overflow-hidden relative flex-shrink-0">
+          <div
+            className={`relative overflow-hidden ${
+              featured
+                ? "aspect-[16/9]"
+                : "aspect-[4/3]"
+            }`}
+          >
             <Image
               src={article.image_url || article.imageUrl}
               alt={article.title}
               fill
-              className="  object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="
+                object-cover
+                transition-transform
+                duration-700
+                group-hover:scale-105
+              "
             />
-            <div className="absolute top-7 inset-0 bg-gradient-to-t from-[#0d1117] to-transparent" />
-            {/* Status badges */}
-            <div className="absolute top-3 left-3 flex gap-1.5">
-              {isPinned && (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#0bc5ea]/20 border border-[#0bc5ea]/40 text-[#0bc5ea]">
-                  <Pin size={8} /> Featured
-                </span>
-              )}
-              {!isPinned && isTrending && (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-white">
-                  <TrendingUp size={8} /> Trending
-                </span>
-              )}
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+
+            <div className="absolute left-6 top-6">
+              <span className="rounded-full border border-white/15 bg-white/10 backdrop-blur-md px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-white">
+                {article.category}
+              </span>
             </div>
           </div>
         )}
 
-        <div className={`absolute  bottom-0 flex flex-col justify-end p-6 ${isTrending ? "top-10" : "bottom-0" }`}>
-          <span className="text-[10px] font-semibold uppercase tracking-widest mb-2" style={{ color: c }}>
-            {article.category}
-          </span>
-          <h3 className={`font-heading font-bold text-white  leading-snug group-hover:text-[#0bc5ea] transition-colors line-clamp-3 mb-2 ${isTrending ? "text-3xl" : "text-2xl"}`}>
+        {/* Content */}
+        <div className="p-7">
+          <h3
+            className={`
+              font-heading
+              font-bold
+              text-foreground
+              leading-tight
+              transition-colors
+              duration-300
+              group-hover:text-primary
+              ${
+                featured
+                  ? "text-3xl"
+                  : "text-xl"
+              }
+            `}
+          >
             {article.title}
           </h3>
-          <p className="text-white/100 text-xs leading-relaxed line-clamp-2 mb-3 flex-1">
+
+          <p className="mt-4 text-muted-foreground leading-7 line-clamp-3">
             {article.excerpt}
           </p>
-          <div className="flex items-center justify-between mt-auto">
-            <div className="flex items-center gap-1 text-[10px] text-[#64748b]">
-              {article.views > 0 && (
-                <><TrendingUp size={9} /> {article.views} views</>
-              )}
-            </div>
-            {/* <ArrowRight size={13} className="text-[#64748b] group-hover:text-[#0bc5ea] group-hover:translate-x-1 transition-all" /> */}
+
+          <div className="mt-8 flex items-center justify-between">
+            <span className="text-sm font-medium text-primary">
+              Read Article
+            </span>
+
+            <ArrowRight
+              size={18}
+              className="
+                text-primary
+                transition-transform
+                duration-300
+                group-hover:translate-x-1
+              "
+            />
           </div>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }
-
 export default function FeaturedArticles({
   initialArticles = [],
   ennobleTitle,
   ennobleSubtitle,
 }) {
   const [articles, setArticles] = useState(() => (initialArticles?.length ? initialArticles : []));
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
 
   useEffect(() => {
     if (initialArticles?.length) setArticles(initialArticles);
@@ -154,105 +184,67 @@ export default function FeaturedArticles({
   const regular = validArticles.slice(3);
 
   return (
-    <section data-testid="featured-articles" className="py-16 px-6 section-divider bg-[#080d12]">
-      <div className="max-w-7xl mx-auto" ref={ref}>
-        {/* Ennoble brand header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
-          <div>
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}}>
-              <p className="font-heading text-4xl sm:text-5xl font-bold text-gradient-cyan leading-none mb-1">
-                {ennobleTitle?.trim() || 'Ennoble'}
-              </p>
-              <p className="text-[#94a3b8] text-sm font-medium tracking-wide">
-                {ennobleSubtitle?.trim() || 'The Frontier of Biomedical Innovation'}
-              </p>
-            </motion.div>
-          </div>
-          <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }}>
-            <Link
-              href="/regulatory-insights"
-              data-testid="view-all-ennoble"
-              className="flex items-center gap-1.5 text-sm font-semibold text-[#0bc5ea] hover:gap-2.5 transition-all whitespace-nowrap"
-            >
-              All Articles <ArrowRight size={14} />
-            </Link>
-          </motion.div>
+  <section
+    data-testid="featured-articles"
+    className="relative py-28 overflow-hidden"
+  >
+    {/* Background */}
+    {/* <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-secondary/40 blur-3xl" />
+    </div> */}
+
+    <div className="relative max-w-7xl mx-auto px-6">
+
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-16">
+        <div className="max-w-2xl">
+
+          <span className="inline-flex items-center rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.25em] text-primary">
+            Curated Knowledge
+          </span>
+
+          <h2 className="mt-6 font-heading text-5xl lg:text-6xl font-bold tracking-tight leading-none">
+            {ennobleTitle || "Ennoble"}
+          </h2>
+
+          <p className="mt-6 text-lg leading-8 text-muted-foreground">
+            {ennobleSubtitle ||
+              "Perspectives on AI, MedTech, Commercialization and Biomedical Innovation."}
+          </p>
+
         </div>
 
-        {/* Popularity note */}
-        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.15 }}
-          className="text-[#64748b] text-xs mb-6 flex items-center gap-1.5">
-          <Pin size={10} className="text-[#0bc5ea]" /> Pinned by author &nbsp;·&nbsp;
-          <TrendingUp size={10} className="text-[#94a3b8]" /> Ranked by reader visits
-        </motion.p>
-
-        {articles.length > 0 ? (
-          <div className="relative  lg:block">
-            <FlowConnector/>
-
-            {/* Featured Articles */}
-            <div className="space-y-8">
-
-              {featured.map((article, i) => (
-                <div
-                  key={article.id || article.slug}
-                  className="hidden lg:grid grid-cols-5 gap-6"
-                >
-                  <div
-                    className={`col-span-3 ${
-                      i % 2 === 0
-                        ? "col-start-1"
-                        : "col-start-3"
-                    }`}
-                  >
-                    <ArticleCard
-                      article={article}
-                      isPinned={article.is_featured}
-                      isTrending={!article.is_featured}
-                      index={i}
-                    />
-                  </div>
-                </div>
-              ))}
-
-              {/* Mobile */}
-              <div className="lg:hidden space-y-6">
-                {featured.map((article, i) => (
-                  <ArticleCard
-                    key={article.id || article.slug}
-                    article={article}
-                    isPinned={article.is_featured}
-                    isTrending={!article.is_featured}
-                    index={i}
-                  />
-                ))}
-              </div>
-              
-            </div>
-              
-            {/* Other Articles */}
-            {regular.length > 0 && (
-              <div className="grid md:grid-cols-2 gap-6 mt-10">
-                {regular.map((article, i) => (
-                  <ArticleCard
-                    key={article.id || article.slug}
-                    article={article}
-                    isPinned={article.is_featured}
-                    isTrending={false}
-                    index={i + featured.length}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {[0,1,2,3,4].map(i => (
-              <div key={i} className="glass-card rounded-2xl border border-white/6 h-64 animate-pulse" />
-            ))}
-          </div>
-        )}
+        <Link
+          href="/regulatory-insights"
+          className="btn-outline-exec rounded-xl px-6 py-3 inline-flex items-center gap-2 self-start lg:self-auto"
+        >
+          Explore Library
+          <ArrowRight size={16} />
+        </Link>
       </div>
-    </section>
-  );
+
+      {/* Cards */}
+      {featured.length ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {featured.map((article) => (
+            <div key={article.id || article.slug}>
+              <ArticleCard article={article} featured={false} />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {[1,2,3].map((i)=>(
+            <div
+              key={i}
+              className="glass-card rounded-[28px] h-[480px] animate-pulse"
+            />
+          ))}
+        </div>
+      )}
+
+    </div>
+  </section>
+);
 }

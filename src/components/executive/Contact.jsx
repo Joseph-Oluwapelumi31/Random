@@ -1,7 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Linkedin, Youtube, Send, CheckCircle } from 'lucide-react';
+import { Linkedin, Youtube, Send, CheckCircle, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 
 function resolveBackendUrl() {
@@ -30,7 +30,7 @@ function normalizeEmailInput(value) {
 }
 
 const fieldClass =
-  'w-full rounded-xl border border-white/15 bg-[#0c1219] px-4 py-3 text-sm text-slate-100 caret-[#0bc5ea] placeholder:text-slate-500 shadow-inner shadow-black/30 focus:outline-none focus:border-[#0bc5ea]/50 focus:ring-1 focus:ring-[#0bc5ea]/25';
+  'w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground caret-primary placeholder:text-muted-foreground transition focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/25';
 
 /** ~4:3 default box at typical column width; user can resize taller up to max (see min-h / max-h). */
 const messageAreaClass = `${fieldClass} resize-y min-h-[12rem] max-h-[min(75vh,32rem)] overflow-y-auto leading-relaxed`;
@@ -78,127 +78,260 @@ export default function Contact({ siteSettings = null }) {
   };
 
   return (
-    <section id="contact" ref={ref} data-testid="contact-section" className="py-20 px-6 section-divider bg-[#080d12]">
+    <section id="contact" ref={ref} data-testid="contact-section" className="py-20 px-6 section-divider bg-background">
       <div className="max-w-7xl mx-auto">
-        <motion.p initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} className="text-[#0bc5ea] text-xs font-semibold uppercase tracking-widest mb-3">Connect</motion.p>
-        <motion.h2 initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.08 }} className="font-heading text-4xl sm:text-5xl font-bold text-white leading-none mb-10">
-          Let's Build the <span className="text-gradient-cyan">Future Together.</span>
+        <motion.p initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} className="text-primary text-xs font-semibold uppercase tracking-widest mb-3">Connect</motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.08 }} className="font-heading text-4xl sm:text-5xl font-bold text-foreground leading-none mb-10">
+          Let&apos;s Build the <span className="text-gradient-cyan">Future Together.</span>
         </motion.h2>
 
-        <div data-testid="contact-grid" className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <motion.div initial={{ opacity: 0, x: -24 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.2 }} className="space-y-5">
-            <p className="text-[#94a3b8] text-base leading-relaxed max-w-md">
+        <div
+          data-testid="contact-grid"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start"
+        >
+          {/* LEFT SIDE */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-5"
+          >
+            <p className="text-muted-foreground text-lg leading-8 max-w-md mb-10">
               {siteSettings?.contactIntro?.trim()
                 ? siteSettings.contactIntro
-                : 'For partnership proposals, board advisory roles, speaking engagements, or investment discussions — connect via LinkedIn.'}
+                : "Partnerships, advisory opportunities, speaking engagements and strategic collaborations. Let's discuss how we can shape the future of biomedical innovation together."}
             </p>
-            {[{ Icon: Linkedin, label: 'LinkedIn', value: 'linkedin.com/in/reddy-vamsi', href: 'https://www.linkedin.com/in/reddy-vamsi/', color: '#0077b5' }, { Icon: Youtube, label: 'YouTube', value: '@VR_Ennoble · MedTech Innovation', href: 'https://www.youtube.com/@VR_Ennoble', color: '#ff0000' }].map(item => (
-              <a key={item.label} href={item.href} target="_blank" rel="noopener noreferrer" data-testid={`contact-${item.label.toLowerCase()}`} className="flex items-center gap-4 glass-card rounded-xl p-4 border border-white/6 hover:border-white/14 hover:-translate-y-0.5 transition-all duration-200 group">
-                <div className="p-2.5 rounded-lg" style={{ background: `${item.color}20`, color: item.color }}><item.Icon size={18} /></div>
-                <div><p className="text-xs text-[#64748b] uppercase tracking-widest mb-0.5">{item.label}</p><p className="text-white text-sm font-medium group-hover:text-[#0bc5ea] transition-colors">{item.value}</p></div>
-              </a>
-            ))}
-            <div className="glass-card rounded-2xl p-5 border border-[#0bc5ea]/15">
-              <p className="font-heading font-semibold text-white mb-1">Stay at the Frontier</p>
-              <p className="text-[#64748b] text-sm mb-4">Subscribe to Ennoble, the frontier of Biomedical Innovation.</p>
-              <form onSubmit={handleSubscribe} className="flex flex-col gap-2" noValidate>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    name="newsletter-email"
-                    required
-                    pattern={EMAIL_PATTERN}
-                    title="Use a valid email address (e.g. name@domain.com)"
-                    value={email}
-                    onChange={(e) => {
-                      setSubEmailError('');
-                      setEmail(normalizeEmailInput(e.target.value));
-                    }}
-                    placeholder="your@email.com"
-                    data-testid="newsletter-input"
-                    className={`flex-1 py-2.5 ${fieldClass}`}
+              
+            <div className="space-y-6">
+              
+              {[
+                {
+                  Icon: Linkedin,
+                  label: "LinkedIn",
+                  value: "linkedin.com/in/reddy-vamsi",
+                  href: "https://www.linkedin.com/in/reddy-vamsi/",
+                },
+                {
+                  Icon: Youtube,
+                  label: "YouTube",
+                  value: "@VR_Ennoble",
+                  href: "https://www.youtube.com/@VR_Ennoble",
+                },
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center justify-between border-b border-border pb-5 hover:border-primary transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <item.Icon
+                      size={20}
+                      className="text-primary"
+                    />
+
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                        {item.label}
+                      </p>
+              
+                      <p className="font-medium text-foreground">
+                        {item.value}
+                      </p>
+                    </div>
+                  </div>
+              
+                  <ArrowRight
+                    size={18}
+                    className="text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-1"
                   />
-                  <button type="submit" data-testid="newsletter-btn" className="btn-exec px-4 py-2.5 rounded-xl text-sm font-semibold shrink-0"><Send size={14} /></button>
-                </div>
-                {subEmailError && (
-                  <p className="text-amber-400/95 text-xs" role="alert">{subEmailError}</p>
-                )}
-              </form>
-              {subStatus && <p className="text-[#0bc5ea] text-xs mt-2 flex items-center gap-1"><CheckCircle size={11} />{subStatus}</p>}
+                </a>
+              ))}
+
+            </div>
+            
+            {/* Newsletter */}
+            
+            <div className="mt-16 rounded-3xl border border-border bg-card p-8">
+
+      <h3 className="font-heading text-2xl font-bold text-foreground">
+        Stay at the Frontier
+      </h3>
+
+      <p className="text-muted-foreground mt-2 mb-6">
+        Monthly insights on Biomedical Innovation.
+      </p>
+
+      <form
+        onSubmit={handleSubscribe}
+        className="space-y-3"
+        noValidate
+      >
+        <input
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          required
+          pattern={EMAIL_PATTERN}
+          value={email}
+          onChange={(e) => {
+            setSubEmailError("");
+            setEmail(normalizeEmailInput(e.target.value));
+          }}
+          placeholder="Enter your email"
+          className={fieldClass}
+        />
+
+        <button
+          type="submit"
+          className="btn-exec rounded-xl px-6 py-3"
+        >
+          Subscribe
+        </button>
+
+        {subEmailError && (
+          <p className="text-xs text-amber-500">
+            {subEmailError}
+          </p>
+        )}
+
+        {subStatus && (
+          <p className="flex items-center gap-2 text-primary text-sm">
+            <CheckCircle size={15} />
+            {subStatus}
+          </p>
+        )}
+      </form>
             </div>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, x: 24 }} animate={inView ? { opacity: 1, x: 0 } : {}} transition={{ delay: 0.3 }} className="glass-card rounded-2xl p-7 border border-white/6">
-            <h3 className="font-heading text-xl font-bold text-white mb-6">Send a Message</h3>
+          {/* RIGHT SIDE */}
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-7"
+          >
             {sent ? (
-              <div className="flex flex-col items-center justify-center py-10 gap-3">
-                <CheckCircle size={44} className="text-[#0bc5ea]" />
-                <p className="text-white font-semibold">Message received.</p>
-                <p className="text-[#64748b] text-sm text-center">I'll respond within 24 hours.</p>
+              <div className="rounded-3xl border border-border bg-card p-10 text-center shadow-sm">
+              
+                <CheckCircle
+                  size={60}
+                  className="mx-auto text-primary"
+                />
+
+                <h3 className="mt-6 text-3xl font-heading font-bold text-foreground">
+                  Thank You
+                </h3>
+            
+                <p className="mt-3 text-muted-foreground">
+                  Your message has been received.
+                </p>
+            
               </div>
             ) : (
-              <form onSubmit={handleSend} className="space-y-4" noValidate>
-                {[{ k: 'name', label: 'Name', placeholder: 'Enter your Full Name', type: 'text' }, { k: 'email', label: 'Email', placeholder: 'email@institution.com', type: 'email' }].map(f => (
-                  <div key={f.k}>
-                    <label className="block text-xs text-[#64748b] uppercase tracking-widest mb-1.5">{f.label}</label>
-                    <input
-                      type={f.type}
-                      inputMode={f.k === 'email' ? 'email' : 'text'}
-                      autoComplete={f.k === 'email' ? 'email' : 'name'}
-                      name={f.k === 'email' ? 'contact-email' : 'contact-name'}
-                      required
-                      pattern={f.k === 'email' ? EMAIL_PATTERN : undefined}
-                      title={f.k === 'email' ? 'Use a valid email address (e.g. name@domain.com)' : undefined}
-                      value={form[f.k]}
-                      onChange={(e) => {
-                        if (f.k === 'email') setFormEmailError('');
-                        const v = f.k === 'email' ? normalizeEmailInput(e.target.value) : e.target.value;
-                        setForm({ ...form, [f.k]: v });
-                      }}
-                      placeholder={f.placeholder}
-                      data-testid={`contact-${f.k}`}
-                      className={fieldClass}
-                    />
+              <div className="rounded-3xl border border-border bg-card p-10 shadow-sm">
+                <form
+                  onSubmit={handleSend}
+                  className="space-y-8"
+                  noValidate
+                >
+                
+                  <div className="grid md:grid-cols-2 gap-8">
+            
+                    <div>
+            
+                      <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-3">
+                        Name
+                      </label>
+            
+                      <input
+                        type="text"
+                        value={form.name}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            name: e.target.value,
+                          })
+                        }
+                        placeholder="Vamsi Reddy"
+                        className={fieldClass}
+                      />
+
+                    </div>
+                      
+                    <div>
+                      
+                      <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-3">
+                        Email
+                      </label>
+                      
+                      <input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => {
+                          setFormEmailError("");
+                          setForm({
+                            ...form,
+                            email: normalizeEmailInput(e.target.value),
+                          });
+                        }}
+                        placeholder="vamsi@example.com"
+                        className={fieldClass}
+                      />
+
+                    </div>
+                      
                   </div>
-                ))}
-                {formEmailError && (
-                  <p className="text-amber-400/95 text-xs -mt-2" role="alert">{formEmailError}</p>
-                )}
-                <div>
-                  <label className="block text-xs text-[#64748b] uppercase tracking-widest mb-1.5">Message</label>
-                  <textarea
-                    value={form.message}
-                    onChange={e => setForm({ ...form, message: e.target.value })}
-                    required
-                    rows={6}
-                    placeholder="I'd like to discuss..."
-                    data-testid="contact-message"
-                    name="contact-message"
-                    autoComplete="off"
-                    className={messageAreaClass}
-                  />
-                </div>
-                <button type="submit" disabled={sending} data-testid="contact-send" className="w-full btn-exec px-6 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-60">
-                  {sending ? 'Sending...' : <><Send size={15} />Send Message</>}
-                </button>
-              </form>
+                      
+                  {formEmailError && (
+                    <p className="text-xs text-amber-500">
+                      {formEmailError}
+                    </p>
+                  )}
+
+                  <div>
+                
+                    <label className="block text-xs uppercase tracking-[0.18em] text-muted-foreground mb-3">
+                      Message
+                    </label>
+                
+                    <textarea
+                      rows={8}
+                      value={form.message}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          message: e.target.value,
+                        })
+                      }
+                      placeholder="Briefly describe your vision..."
+                      className={messageAreaClass}
+                    />
+
+                  </div>
+                    
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="btn-exec rounded-full px-10 py-4 flex items-center gap-3"
+                  >
+                    {sending ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        <Send size={18} />
+                        Send Inquiry
+                      </>
+                    )}
+                  </button>
+                  
+                </form>
+              </div>
             )}
           </motion.div>
-        </div>
-
-        <div className="mt-12 pt-6 border-t border-white/6 text-center text-[#64748b] text-xs">
-          <p>
-            {siteSettings?.contactFooterLine1?.trim()
-              ? siteSettings.contactFooterLine1
-              : `© ${new Date().getFullYear()} Vamsi Reddy · Global Head of Product Development · Evon Medics LLC`}
-          </p>
-          <p className="mt-1">
-            {siteSettings?.contactFooterLine2?.trim()
-              ? siteSettings.contactFooterLine2
-              : 'EB-1A Approved Scientist · Johns Hopkins MSE · 5+ US Patents'}
-          </p>
         </div>
       </div>
     </section>

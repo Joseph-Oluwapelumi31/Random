@@ -1,6 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useState } from 'react';
 import { BookOpen, ExternalLink, Award, FileText, Shield } from 'lucide-react';
 
 const PROFILE_PHOTO = 'https://customer-assets.emergentagent.com/job_vamsi-biotech/artifacts/01zj1rc6_IMG_0162.jpg';
@@ -120,28 +119,26 @@ const TYPE_BADGE_COLOR = {
 };
 
 export default function ORCIDPublications({ works = [], compact = false }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
   const [tab, setTab] = useState('articles'); // 'articles' | 'patents'
 
   const pubs = works.length > 0 ? works : PUBLICATIONS;
 
   return (
-    <section data-testid="publications-section" className={compact ? '' : 'py-20 px-6 section-divider bg-[#080d12]'}>
-      <div className={compact ? '' : 'max-w-7xl mx-auto'} ref={ref}>
+    <section data-testid="publications-section" className={compact ? '' : 'py-20 px-6 section-divider'}>
+      <div className={compact ? '' : 'max-w-7xl mx-auto'}>
         {!compact && (
           <>
-            <motion.p initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} className="text-[#0bc5ea] text-xs font-semibold uppercase tracking-widest mb-3">
+            <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-3">
               Peer-Reviewed Contributions
-            </motion.p>
+            </p>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-              <motion.h2 initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.08 }} className="font-heading text-4xl sm:text-5xl font-bold text-white leading-none">
+              <h2 className="font-heading text-4xl sm:text-5xl font-bold text-foreground leading-none">
                 Published Research. <span className="text-gradient-cyan">Verified Impact.</span>
-              </motion.h2>
-              <div className="flex items-center gap-2 text-xs text-[#64748b]">
+              </h2>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <BookOpen size={13} />
                 <span>ORCID: 0009-0006-6427-5005</span>
-                <a href="https://orcid.org/0009-0006-6427-5005" target="_blank" rel="noopener noreferrer" className="text-[#0bc5ea] hover:underline flex items-center gap-0.5">
+                <a href="https://orcid.org/0009-0006-6427-5005" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-0.5">
                   View <ExternalLink size={11} />
                 </a>
               </div>
@@ -150,12 +147,12 @@ export default function ORCIDPublications({ works = [], compact = false }) {
         )}
 
         {/* Toggle */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.12 }} className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6">
           <button
             onClick={() => setTab('articles')}
             data-testid="tab-articles"
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              tab === 'articles' ? 'btn-exec' : 'glass-card border border-white/8 text-[#94a3b8] hover:text-white'
+              tab === 'articles' ? 'btn-exec' : 'glass-card border border-foreground/8 text-muted-foreground hover:text-foreground'
             }`}
           >
             <BookOpen size={14} /> Publications ({pubs.length})
@@ -164,12 +161,12 @@ export default function ORCIDPublications({ works = [], compact = false }) {
             onClick={() => setTab('patents')}
             data-testid="tab-patents"
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              tab === 'patents' ? 'btn-exec' : 'glass-card border border-white/8 text-[#94a3b8] hover:text-white'
+              tab === 'patents' ? 'btn-exec' : 'glass-card border border-foreground/8 text-muted-foreground hover:text-foreground'
             }`}
           >
             <Shield size={14} /> Patents ({PATENTS.length})
           </button>
-        </motion.div>
+        </div>
 
         {/* Publications Tab */}
         {tab === 'articles' && (
@@ -177,13 +174,10 @@ export default function ORCIDPublications({ works = [], compact = false }) {
             {pubs.map((pub, i) => {
               const bc = TYPE_BADGE_COLOR[pub.type] || '#0bc5ea';
               return (
-                <motion.div
+                <div
                   key={pub.id || i}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={inView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.4, delay: i * 0.06 }}
                   data-testid={`pub-${i}`}
-                  className="glass-card rounded-xl border border-white/6 p-5 hover:border-[#0bc5ea]/20 transition-colors group"
+                  className="glass-card rounded-xl border border-foreground/6 p-5 hover:border-primarytext-primary/20 transition-colors group"
                 >
                   <div className="flex items-start gap-4">
                     <div className="p-2 rounded-lg flex-shrink-0 mt-0.5" style={{ background: `${bc}12` }}>
@@ -194,22 +188,22 @@ export default function ORCIDPublications({ works = [], compact = false }) {
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ color: bc, background: `${bc}12` }}>
                           {pub.type}
                         </span>
-                        {pub.year && <span className="text-xs text-[#64748b]">{pub.year}</span>}
-                        {pub.reference && <span className="text-xs text-[#64748b]">· {pub.reference}</span>}
+                        {pub.year && <span className="text-xs text-muted-foreground">{pub.year}</span>}
+                        {pub.reference && <span className="text-xs text-muted-foreground">· {pub.reference}</span>}
                       </div>
-                      <p className="text-[#e2e8f0] text-sm font-medium leading-snug mb-1 group-hover:text-white transition-colors">
+                      <p className="text-foreground text-sm font-medium leading-snug mb-1 group-hover:text-foreground transition-colors">
                         {pub.title}
                       </p>
-                      {pub.journal && <p className="text-[#64748b] text-xs italic">{pub.journal}</p>}
-                      {pub.accessNote && <p className="text-[#64748b] text-xs mt-0.5 italic">⚠ {pub.accessNote}</p>}
+                      {pub.journal && <p className="text-muted-foreground text-xs italic">{pub.journal}</p>}
+                      {pub.accessNote && <p className="text-muted-foreground text-xs mt-0.5 italic">⚠ {pub.accessNote}</p>}
                     </div>
                     {(pub.url || pub.doi) && (
-                      <a href={pub.url || `https://doi.org/${pub.doi}`} target="_blank" rel="noopener noreferrer" className="text-[#64748b] hover:text-[#0bc5ea] transition-colors flex-shrink-0">
+                      <a href={pub.url || `https://doi.org/${pub.doi}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0">
                         <ExternalLink size={14} />
                       </a>
                     )}
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -219,11 +213,8 @@ export default function ORCIDPublications({ works = [], compact = false }) {
         {tab === 'patents' && (
           <div className="space-y-3">
             {PATENTS.map((pat, i) => (
-              <motion.div
+              <div
                 key={pat.id}
-                initial={{ opacity: 0, x: -16 }}
-                animate={inView ? { opacity: 1, x: 0 } : {}}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
                 data-testid={`patent-${pat.id}`}
                 className="glass-card rounded-xl border overflow-hidden"
                 style={{ borderColor: `${pat.statusColor}20` }}
@@ -238,27 +229,27 @@ export default function ORCIDPublications({ works = [], compact = false }) {
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ color: pat.statusColor, background: `${pat.statusColor}12` }}>
                         {pat.status}
                       </span>
-                      <span className="text-xs text-[#64748b]">{pat.inventorRole}</span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-white/5 text-[#94a3b8]">{pat.relatedProject}</span>
+                      <span className="text-xs text-muted-foreground">{pat.inventorRole}</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-foreground/5 text-muted-foreground">{pat.relatedProject}</span>
                     </div>
-                    <p className="text-white text-sm font-semibold leading-snug mb-2">{pat.title}</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-[#64748b]">
-                      <span><span className="text-[#94a3b8]">USPTO:</span> {pat.usptoApp}</span>
-                      <span><span className="text-[#94a3b8]">Filed:</span> {pat.filed}</span>
+                    <p className="text-foreground text-sm font-semibold leading-snug mb-2">{pat.title}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-xs text-muted-foreground">
+                      <span><span className="text-muted-foreground">USPTO:</span> {pat.usptoApp}</span>
+                      <span><span className="text-muted-foreground">Filed:</span> {pat.filed}</span>
                       {pat.international && (
-                        <span className="sm:col-span-2"><span className="text-[#94a3b8]">International:</span> {pat.international}</span>
+                        <span className="sm:col-span-2"><span className="text-muted-foreground">International:</span> {pat.international}</span>
                       )}
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         )}
 
         {!compact && (
-          <p className="text-center text-[#64748b] text-xs mt-6">
-            ORCID: <a href="https://orcid.org/0009-0006-6427-5005" target="_blank" rel="noopener noreferrer" className="text-[#0bc5ea] hover:underline">0009-0006-6427-5005</a>
+          <p className="text-center text-muted-foreground text-xs mt-6">
+            ORCID: <a href="https://orcid.org/0009-0006-6427-5005" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">0009-0006-6427-5005</a>
             {works.length === 0 && ' · Connect ORCID profile to auto-sync all works'}
           </p>
         )}

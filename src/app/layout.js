@@ -1,10 +1,29 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
 import Script from 'next/script';
+import ThemeProvider from '@/components/providers/ThemeProvider';
+import { Inter, Playfair_Display, Space_Grotesk } from 'next/font/google';
+import { getSiteSettings } from '@/lib/sanity';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-space',
+  display: 'swap',
+});
 export const metadata = {
   title: 'Vamsi Reddy | VP Engineering · MedTech Executive · EB-1A Scientist',
   description: 'Global Head of Product Development at Evon Medics. EB-1A Extraordinary Ability. $12.5M+ NIH portfolio. 5+ US Patents. Johns Hopkins MSE.',
@@ -19,10 +38,11 @@ export const metadata = {
   twitter: { card: 'summary_large_image', title: 'Vamsi Reddy | MedTech Executive', description: 'EB-1A Approved · $12.5M+ NIH Portfolio · Global MedTech Leader' },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   const ga4Id = process.env.NEXT_PUBLIC_GA4_ID;
+  const site = await getSiteSettings();
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -43,19 +63,31 @@ export default function RootLayout({ children }) {
           })}}
         />
       </head>
-      <body className="bg-[#080d12] text-[#e2e8f0] font-body antialiased">
-        {ga4Id && ga4Id !== 'G-PLACEHOLDER' && (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`} strategy="afterInteractive" />
-            <Script id="ga4" strategy="afterInteractive">{`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date()); gtag('config', '${ga4Id}');
-            `}</Script>
-          </>
-        )}
-        <Navbar />
-        <main>{children}</main>
+      <body
+        className={`${inter.variable} ${playfair.variable} ${spaceGrotesk.variable} font-body antialiased`}>
+        <ThemeProvider>
+          {ga4Id && ga4Id !== 'G-PLACEHOLDER' && (
+            <>
+              <Script
+                src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}
+                strategy="afterInteractive"
+              />
+              <Script id="ga4" strategy="afterInteractive">
+                {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${ga4Id}');
+                `}
+              </Script>
+            </>
+          )}
+
+          <Navbar />
+        
+          <main>{children}</main>
+          <Footer siteSettings={site} />
+        </ThemeProvider>
       </body>
     </html>
   );

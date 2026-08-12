@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useEffect, useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { HERO_BRAND_LOGOS } from '@/lib/brandLogos';
@@ -54,45 +55,68 @@ function useTypewriter(texts, typeSpeed = 72, deleteSpeed = 38, pause = 2200) {
 
 function NeuralCanvas() {
   const ref = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
+
   useEffect(() => {
     const canvas = ref.current;
-    if (!canvas) return;
+    if (!canvas || shouldReduceMotion) return;
+    if (window.innerWidth < 1024) return;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const w = canvas.offsetWidth;
     const h = canvas.offsetHeight;
     if (w < 2 || h < 2) return;
+
     canvas.width = w;
     canvas.height = h;
-    const nodes = Array.from({ length: 55 }, () => ({
-      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
-      r: Math.random() * 1.4 + 0.8, phase: Math.random() * Math.PI * 2,
+    const nodes = Array.from({ length: 28 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * 0.2,
+      vy: (Math.random() - 0.5) * 0.2,
+      r: Math.random() * 1.1 + 0.7,
+      phase: Math.random() * Math.PI * 2,
     }));
+
     let raf;
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      nodes.forEach(n => {
-        n.x += n.vx; n.y += n.vy; n.phase += 0.012;
+      nodes.forEach((n) => {
+        n.x += n.vx;
+        n.y += n.vy;
+        n.phase += 0.008;
         if (n.x < 0 || n.x > canvas.width) n.vx *= -1;
         if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
       });
-      for (let i = 0; i < nodes.length; i++) for (let j = i + 1; j < nodes.length; j++) {
-        const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-        if (d < 110) {
-          ctx.beginPath(); ctx.moveTo(nodes[i].x, nodes[i].y); ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.strokeStyle = `rgba(11,197,234,${(1 - d / 110) * 0.1})`; ctx.lineWidth = 0.5; ctx.stroke();
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const d = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+          if (d < 78) {
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(11,197,234,${(1 - d / 78) * 0.08})`;
+            ctx.lineWidth = 0.45;
+            ctx.stroke();
+          }
         }
       }
-      nodes.forEach(n => {
-        ctx.fillStyle = `rgba(11,197,234,0.18)`;
-        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+
+      nodes.forEach((n) => {
+        ctx.fillStyle = 'rgba(11,197,234,0.16)';
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fill();
       });
       raf = requestAnimationFrame(draw);
     };
+
     draw();
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [shouldReduceMotion]);
+
   return <canvas ref={ref} className="absolute inset-0 w-full h-full opacity-25 pointer-events-none" aria-hidden />;
 }
 
@@ -101,22 +125,23 @@ function TypewriterBadge({ className = '', variant = 'overlay', lines }) {
   const text = useTypewriter(texts);
   const isBelow = variant === 'below';
   return (
-    <div className={`glass-exec rounded-xl px-4 py-3 border border-[#0bc5ea]/25 ${className}`}>
-      <p className={`text-[#64748b] text-[9px] font-semibold uppercase tracking-widest mb-1 ${isBelow ? 'text-left' : 'text-center sm:text-left'}`}>Executive Identity</p>
+    <div className={`glass-exec rounded-xl px-4 py-3 border border-primary/25 ${className}`}>
+      <p className={`text-muted-foreground text-[9px] font-semibold uppercase tracking-widest mb-1 ${isBelow ? 'text-left' : 'text-center sm:text-left'}`}>Executive Identity</p>
       <p
         className={
           isBelow
-            ? 'text-white text-sm font-semibold font-heading leading-snug text-left break-words min-h-[1.75rem]'
-            : 'text-white text-sm font-semibold font-heading min-h-[1.75rem] sm:min-h-[1.4em] leading-snug text-center sm:text-left max-w-[16rem] sm:max-w-none mx-auto sm:mx-0 break-words sm:whitespace-nowrap'
+            ? 'text-foreground text-sm font-semibold font-heading leading-snug text-left break-words min-h-[1.75rem]'
+            : 'text-foreground text-sm font-semibold font-heading min-h-[1.75rem] sm:min-h-[1.4em] leading-snug text-center sm:text-left max-w-[16rem] sm:max-w-none mx-auto sm:mx-0 break-words sm:foregroundspace-nowrap'
         }
       >
-        {text}<span className="inline-block w-[2px] h-[1em] bg-[#0bc5ea] ml-[1px] animate-pulse align-middle" />
+        {text}<span className="inline-block w-[2px] h-[1em] bg-primary ml-[1px] animate-pulse align-middle" />
       </p>
     </div>
   );
 }
 
 export default function Hero3D({ heroCopy = null }) {
+  const shouldReduceMotion = useReducedMotion();
   const heroEyebrow =
     (typeof heroCopy?.heroEyebrow === 'string' && heroCopy.heroEyebrow.trim()) ||
     'EB-1A Scientist';
@@ -125,10 +150,10 @@ export default function Hero3D({ heroCopy = null }) {
   //   'Global MedTech Executive & R&D Strategist';
   const heroHeadlineGradient =
     (typeof heroCopy?.heroHeadlineGradient === 'string' && heroCopy.heroHeadlineGradient.trim()) ||
-    'Engineering the Future of Human Health.';
+    'Ponieering the future of clinical innovation.';
   const heroSubline1 =
     (typeof heroCopy?.heroSubline1 === 'string' && heroCopy.heroSubline1.trim()) ||
-    'Global R&D Strategy • Product Pipeline •NIH-Funded Innovation';
+    'Vamsi Reddy stands at the intersection of deep-tech enginneering, regulatory strategy, and commercialization. With a proven track record of leading global R&D teams, securing intellectual property, and navigating complex regulatory landscapes, he is dedicated to transforming innovative ideas into market-ready solutions that improve patient outcomes.';
   /* Referenced in JSX below — commenting this out breaks the whole home page (ReferenceError). */
   const heroSubline2 =
     (typeof heroCopy?.heroSubline2 === 'string' && heroCopy.heroSubline2.trim()) ||
@@ -148,162 +173,300 @@ export default function Hero3D({ heroCopy = null }) {
   }, [heroCopy?.heroTypewriterLines]);
 
   return (
-    <section data-testid="hero-section" className="relative min-h-screen bg-[#080d12] overflow-x-clip overflow-y-visible flex items-center">
+    <section 
+      data-testid="hero-section" 
+      className="relative min-h-screen  overflow-x-clip overflow-y-visible flex items-center "
+      style={{
+        background: `
+          radial-gradient(
+            circle at 70% 15%,
+            rgba(25,123,189,0.05),
+            transparent 45%
+          ),
+          hsl(var(--background))
+        `,
+      }}
+    >
       <div className="absolute inset-0 z-0 pointer-events-none" aria-hidden>
         <NeuralCanvas />
       </div>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#080d12] via-[#080d12]/55 to-transparent pointer-events-none z-[1]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#080d12] via-transparent to-transparent pointer-events-none z-[1]" />
-      <div className="absolute right-[8%] top-1/2 -translate-y-1/2 w-[500px] h-[600px] bg-[#0bc5ea]/4 rounded-full blur-[120px] pointer-events-none z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/55 to-transparent pointer-events-none z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none z-[1]" />
+      <div className="absolute right-[8%] top-1/2 -translate-y-1/2 w-[500px] h-[600px] bg-primary/4 rounded-full blur-[120px] pointer-events-none z-[1]" />
 
       <div className="relative z-[2] max-w-7xl mx-auto px-6 w-full pt-20 pb-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center">
-
-          {/* LEFT: Text */}
-          <div className="flex flex-col items-center lg:items-start text-center lg:text-left">
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 glass-exec rounded-full px-4 py-1.5 mb-7 border border-[#0bc5ea]/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0bc5ea] animate-pulse" />
-              <span className="text-[#94a3b8] text-xs font-medium tracking-wide">{heroEyebrow}</span>
-            </motion.div>
-
-            <motion.h1 initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}
-              className="font-heading font-bold leading-[1.08] text-white mb-6">
-              {/* <span className="block text-3xl sm:text-4xl lg:text-5xl tracking-tight">{heroHeadlinePlain}</span> */}
-              <span className="block text-4xl sm:text-3xl lg:text-[2.65rem] text-gradient-cyan  mt-3 mb-4 sm:mt-4">
-                {heroHeadlineGradient}
-              </span>
-            </motion.h1>
-
-            <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.46 }}
-              className="text-[#94a3b8] text-base md:text-lg mb-2 leading-relaxed">
-              {heroSubline1}
-            </motion.p>
-            <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.52 }}
-              className="text-[#0bc5ea]/75 text-sm font-medium mb-6 tracking-wide">
-              {heroSubline2}
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-3 mb-8 px-1 py-2 rounded-2xl bg-white/[0.04] ring-1 ring-white/[0.08]"
-              aria-label="Affiliations"
-            >
-              {HERO_BRAND_LOGOS.map((logo) => (
-                <span
-                  key={logo.alt}
-                  className="inline-flex items-center justify-center min-h-9 px-1"
-                >
-                  <img
-                    src={logo.src}
-                    alt={logo.alt}
-                    className={logo.className}
-                    loading="lazy"
-                    decoding="async"
-                    draggable={false}
-                    onError={(e) => {
-                      const el = e.currentTarget;
-                      el.style.visibility = 'hidden';
-                      el.removeAttribute('src');
-                    }}
-                  />
-                </span>
-              ))}
-            </motion.div>
-
-            {/* Mobile profile photo — badge sits below frame so it is never clipped by overflow-hidden */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55 }}
-              className="lg:hidden flex flex-col items-stretch w-full max-w-sm mx-auto my-8 relative z-[3] shrink-0"
-            >
-              <div
-                className="relative mx-auto w-[min(100%,20rem)] aspect-[13/17] rounded-3xl overflow-hidden border border-[#0bc5ea]/20"
-                style={{ boxShadow: '0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(11,197,234,0.12)' }}
-              >
-                <img src={PROFILE_PHOTO} alt="Vamsi Reddy" className="absolute inset-0 w-full h-full object-cover object-top" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#080d12]/50 via-transparent to-transparent pointer-events-none" />
-              </div>
-              <div className="mt-4 w-full px-0.5">
-                <TypewriterBadge
-                  key={typewriterLines.length ? typewriterLines.join('|') : 'default'}
-                  variant="below"
-                  className="w-full"
-                  lines={typewriterLines.length ? typewriterLines : undefined}
-                />
-              </div>
-            </motion.div>
-
-            {/* CTAs */}
-            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.62 }}
-              className="flex flex-wrap gap-3 mb-10">
-              <Link href="/innovation-pipeline" data-testid="hero-cta-pipeline" className="btn-exec px-6 py-3.5 rounded-xl font-semibold flex items-center gap-2 text-sm">
-                Innovation Pipeline <ArrowRight size={15} />
-              </Link>
-              <Link href="/global-strategy" className="btn-outline-exec px-6 py-3.5 rounded-xl text-sm font-semibold">
-                Executive Profile
-              </Link>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.78 }}
-              className="flex flex-wrap gap-5">
-              {[{ v: '5+', l: 'US Patents' }, { v: '$12.5M+', l: 'NIH Funded' }, { v: 'JHU', l: 'MSE · 3.8' }, { v: '10+', l: 'Yrs R&D' }].map((s) => (
-                <div key={s.l} className="flex items-baseline gap-1.5">
-                  <span className="font-heading font-bold text-lg text-gradient-cyan">{s.v}</span>
-                  <span className="text-[#64748b] text-xs">{s.l}</span>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-          
-
-          {/* RIGHT: Large portrait — desktop only */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
+        <div className="grid grid-cols-1 lg:grid-cols-[420px_minmax(0,1fr)] gap-10 lg:gap-20 items-center">
+        
+        {/* Left: Large portrait — desktop only */}
+        <motion.div
+            initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.9, delay: 0.4, ease: 'easeOut' }}
-            className="relative hidden lg:flex justify-center items-center w-150 h-50"
+            transition={shouldReduceMotion ? { duration: 0.2 } : { duration: 0.9, delay: 0.4, ease: 'easeOut' }}
+            className="relative hidden lg:flex items-center justify-center"
             data-testid="hero-profile-photo"
           >
-            <div className="absolute top-6 right-4 w-[420px] h-[560px] rounded-[2.5rem] bg-[#8A2BE2]/12 blur-lg" />
-            <div className="absolute top-3 right-2 w-[420px] h-[560px] rounded-[2.5rem] bg-[#0bc5ea]/7 blur-sm" />
-            <div className="absolute inset-0 scale-110 rounded-[2.5rem] bg-gradient-to-br from-[#0bc5ea]/12 to-[#8A2BE2]/12 blur-3xl" />
+            {/* Soft brand glow */}
+            <div className="absolute w-[390px] h-[520px] rounded-[2.5rem] bg-primary/5 blur-3xl scale-105" />
 
             <motion.div
-              animate={{ rotateY: [-2, 2, -2], rotateX: [1, -1, 1] }}
-              transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-              style={{
-                transformStyle: 'preserve-3d',
-                boxShadow: '-20px 24px 70px rgba(0,0,0,0.55), 0 0 0 1px rgba(11,197,234,0.14)',
+              whileHover={shouldReduceMotion ? undefined : {
+                y: -6,
+                scale: 1.01,
               }}
-              className="relative w-[420px] h-[560px] rounded-[2.5rem] overflow-hidden z-10"
+              transition={{ duration: shouldReduceMotion ? 0.15 : 0.35 }}
+              className="
+                relative
+                w-[390px]
+                h-[520px]
+                overflow-hidden
+                rounded-[2.5rem]
+                border border-white/20
+                shadow-[0_20px_50px_rgba(15,23,42,0.10)]
+                bg-card
+                z-10
+              "
             >
-              <img src={PROFILE_PHOTO} alt="Vamsi Reddy" className="w-full h-full object-cover object-top" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#080d12]/65 via-transparent to-transparent" />
-              <div className="absolute inset-y-0 right-0 w-[3px] bg-gradient-to-b from-[#0bc5ea]/70 via-[#8A2BE2]/50 to-[#0bc5ea]/70" />
-              <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-[#0bc5ea]/70 via-[#8A2BE2]/50 to-transparent" />
+              {/* Portrait */}
+              <Image
+                src={PROFILE_PHOTO}
+                alt="Vamsi Reddy"
+                fill
+                priority
+                sizes="(max-width: 1023px) 100vw, 390px"
+                className="
+                  absolute
+                  inset-0
+                  h-full
+                  w-full
+                  object-cover
+                  object-top
+                  transition-transform
+                  duration-700
+                  hover:scale-[1.03]
+                "
+              />
 
-              {/* Name only — role / org live in page copy & global-strategy */}
-              <div className="absolute bottom-[88px] left-0 right-0 px-5">
-                <Link href="/global-strategy" className="block hover:opacity-90 transition-opacity">
-                  <p className="font-heading font-bold text-white text-xl leading-snug">Vamsi Reddy</p>
-                </Link>
-              </div>
-
-              {/* Typewriter badge at bottom of photo */}
-              <div className="absolute bottom-4 left-4 right-4">
-                <TypewriterBadge
-                  key={typewriterLines.length ? typewriterLines.join('|') : 'default-d'}
-                  lines={typewriterLines.length ? typewriterLines : undefined}
-                />
+              {/* Light bottom gradient */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+            
+              {/* Bottom integrated panel */}
+              <div className="absolute bottom-0 left-0 right-0 p-5">
+                <div
+                  className="
+                    rounded-2xl
+                    bg-black/35
+                    backdrop-blur-xl
+                    border border-white/10
+                    p-5
+                  "
+                >
+                  <Link
+                    href="/global-strategy"
+                    className="inline-block transition-opacity hover:opacity-80"
+                  >
+                    <h3 className="font-heading text-xl font-bold text-white">
+                      Vamsi Reddy
+                    </h3>
+                  </Link>
+            
+                  <p className="mt-1 text-sm text-white/70">
+                    MedTech Executive • EB-1A Scientist
+                  </p>
+            
+                  <div className="mt-4">
+                    <TypewriterBadge
+                      key={
+                        typewriterLines.length
+                          ? typewriterLines.join("|")
+                          : "default"
+                      }
+                      lines={
+                        typewriterLines.length
+                          ? typewriterLines
+                          : undefined
+                      }
+                    />
+                  </div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
+          {/* Right: Text */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left max-w-[640px]">
+        {/* Eyebrow */}
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.2 }}
+          className="
+            inline-flex
+            items-center
+            gap-2.5
+            rounded-full
+            glass-exec
+            border
+            border-border
+            px-4
+            py-2
+            mb-8
+            shadow-sm
+          "
+        >
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-secondary opacity-40 animate-ping" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-secondary" />
+        </span>
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+            {heroEyebrow}
+          </span>
+        </motion.div>
+
+        {/* Heading */}
+        <motion.h1
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.32 }}
+          className="font-heading font-bold text-foreground leading-[0.95] tracking-[-0.04em] mb-8"
+        >
+          <span className="block text-5xl sm:text-6xl ">
+            {heroHeadlineGradient}
+          </span>
+        </motion.h1>
+
+        {/* Description */}
+        <motion.p
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.46 }}
+          className="
+            max-w-xl
+            text-lg
+            leading-8
+            text-muted-foreground
+            mb-10
+          "
+        >
+          {heroSubline1}
+        </motion.p>
+
+        {/* Mobile Image */}
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.55 }}
+          className="lg:hidden flex flex-col items-center w-full max-w-sm my-8"
+        >
+          <div
+            className="
+              relative
+              w-full
+              aspect-[13/17]
+              overflow-hidden
+              rounded-[2rem]
+              border border-border
+              shadow-[0_20px_50px_rgba(15,23,42,0.10)]
+            "
+          >
+            <Image
+              src={PROFILE_PHOTO}
+              alt="Vamsi Reddy"
+              fill
+              priority
+              sizes="(max-width: 1023px) 100vw, 100vw"
+              className="absolute inset-0 h-full w-full object-cover object-top"
+            />
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+          </div>
+
+          <div className="mt-5 w-full">
+            <TypewriterBadge
+              key={typewriterLines.length ? typewriterLines.join('|') : 'default'}
+              variant="below"
+              className="w-full"
+              lines={typewriterLines.length ? typewriterLines : undefined}
+            />
+          </div>
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 0.62 }}
+          className="flex flex-wrap items-center gap-4"
+        >
+          <Link
+            href="/innovation-pipeline"
+            data-testid="hero-cta-pipeline"
+            className="
+              group
+              btn-exec
+              inline-flex
+              items-center
+              gap-2
+              rounded-xl
+              px-7
+              py-3.5
+              text-sm
+              font-semibold
+              shadow-[0_10px_30px_hsl(var(--primary)/0.18)]
+              transition-all
+              duration-300
+              hover:-translate-y-0.5
+              hover:shadow-[0_16px_40px_hsl(var(--primary)/0.28)]
+              active:translate-y-0
+            "
+          >
+            <span>Innovation Pipeline</span>
+
+            <ArrowRight
+              size={16}
+              className="
+                text-secondary
+                transition-transform
+                duration-300
+                group-hover:translate-x-1
+              "
+            />
+          </Link>
+
+          <Link
+            href="/global-strategy"
+            className="
+              inline-flex
+              items-center
+              justify-center
+              rounded-xl
+              border
+              border-border
+              bg-card
+              px-7
+              py-3.5
+              text-sm
+              font-semibold
+              text-foreground
+              shadow-sm
+              transition-all
+              duration-300
+              hover:-translate-y-0.5
+              hover:border-primary/30
+              hover:bg-primary/5
+              hover:shadow-md
+              active:translate-y-0
+            "
+          >
+            Executive Profile
+          </Link>
+        </motion.div>
+      </div>
+
+          
+          
           <motion.button
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }} animate={{ opacity: 1 }} transition={shouldReduceMotion ? { duration: 0.15 } : { delay: 1.8 }}
             onClick={() => document.getElementById('kpi-section')?.scrollIntoView({ behavior: 'smooth' })}
-            className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-1 text-[#64748b] hover:text-[#0bc5ea] transition-colors"
+            className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[2] flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
             data-testid="hero-scroll-down"
           >
             <span className="text-xs uppercase tracking-widest">Scroll</span>
